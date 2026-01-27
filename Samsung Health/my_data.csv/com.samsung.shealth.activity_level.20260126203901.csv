@@ -1,0 +1,4 @@
+﻿com.samsung.shealth.activity_level,6307003,1
+activity_level,start_time,update_time,create_time,time_offset,deviceuuid,pkg_name,datauuid
+180003,2024-12-17 15:47:35.886,2024-12-17 15:47:35.886,2024-12-17 15:47:35.896,UTC-0800,3sHRV5oxWU,com.sec.android.app.shealth,4abf564f-fbba-45bf-8a24-0f8395302f63,
+180003,2024-12-18 16:19:00.584,2024-12-18 16:19:00.584,2024-12-18 16:19:00.594,UTC-0800,3sHRV5oxWU,com.sec.android.app.shealth,1ec723f1-bef5-4b67-8f51-76b2797e0a27,

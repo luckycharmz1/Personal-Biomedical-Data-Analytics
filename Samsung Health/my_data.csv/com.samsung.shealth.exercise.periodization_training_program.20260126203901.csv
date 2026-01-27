@@ -1,0 +1,4 @@
+﻿com.samsung.shealth.exercise.periodization_training_program,6307003,1
+create_sh_ver,start_time,modify_sh_ver,update_time,create_time,program,time_offset,deviceuuid,pkg_name,datauuid
+63070030,2026-01-05 05:44:06.120,63070030,2026-01-05 05:44:06.236,2026-01-05 05:44:06.236,37d3f6d0-d585-44ef-a93d-0d3c7cc7bdd9.program.json,UTC-0800,+NZu810/s3,com.sec.android.app.shealth,37d3f6d0-d585-44ef-a93d-0d3c7cc7bdd9,
+63020270,2025-07-06 18:04:38.881,63030110,2025-08-28 18:26:56.204,2025-07-06 18:04:38.920,08d33914-0d58-48f9-b0c2-452f8f1ba253.program.json,UTC-0700,u104vMWe/c,com.sec.android.app.shealth,08d33914-0d58-48f9-b0c2-452f8f1ba253,

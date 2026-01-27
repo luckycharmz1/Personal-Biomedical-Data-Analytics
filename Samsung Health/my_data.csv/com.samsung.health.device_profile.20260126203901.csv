@@ -1,0 +1,11 @@
+﻿com.samsung.health.device_profile,6307003,9
+manufacturer,providing_step_goal,create_sh_ver,step_source_group,device_type,backsync_step_goal,capability,modify_sh_ver,device_group,update_time,create_time,name,model,legacy_deviceuuid,connectivity_type,deviceuuid,pkg_name,accessory_type,fixed_name,datauuid
+motorola,,,,,,,,360001,2026-01-05 16:39:20.423,2026-01-05 05:43:55.901,My Device,moto g stylus 5G - 2024,,,+NZu810/s3,com.sec.android.app.shealth,,moto g stylus 5G - 2024,c014c9d4-d2b7-c64e-7af8-044aca150b97,
+Combined,,,,,,,,0,2026-01-05 05:44:05.389,2026-01-05 05:44:05.389,Combined,Combined,,,VfS0qUERdZ,com.sec.android.app.shealth,,,7af9722c-cd99-07b7-853a-43ce58e819c5,
+all_target,,,,,,,,0,2026-01-05 05:44:06.093,2026-01-05 05:44:06.093,all_target,all_target,,,Mk66SbFqK1,com.sec.android.app.shealth,,,471ca32b-a665-1e9e-7c27-7ac69485dc05,
+motorola,,,,,,,,360001,2024-04-17 00:49:44.048,2024-04-17 00:49:44.048,My Device,motorola razr 2023,,,3sHRV5oxWU,com.sec.android.app.shealth,,,46b52e45-ce59-a346-52ba-fd0f36b5ebea,
+Samsung Electronics,1,62660010,106,10058,1,bf752e0c-d919-4eee-bb66-ffc73d0b7228.capability.json,62900750,360003,2025-01-26 06:30:24.990,2024-03-29 04:51:50.500,Galaxy Watch6,SM-R930,,,b4nSrpWupN,com.sec.android.app.shealth,,,bf752e0c-d919-4eee-bb66-ffc73d0b7228,
+motorola,,,,,,,,360001,2025-04-04 03:52:00.940,2025-02-26 20:21:47.720,My Device,moto g stylus 5G - 2024,,,u104vMWe/c,com.sec.android.app.shealth,,moto g stylus 5G - 2024,531356c7-807e-e536-4220-3e68cfd1f93f,
+Samsung Electronics,,,,,,,,360003,2025-04-14 03:02:07.518,2025-04-14 03:02:07.518,Strava,www.strava.com,,,1odRSda+6j,com.sec.android.app.shealth,,moto g stylus 5G - 2024,a4cc2e24-969b-f40a-6191-7cbde3db5e8a,
+Samsung Electronics,1,,106,10058,1,a834230c-9e46-42eb-8f7e-e33e0e493954.capability.json,63030110,360003,2025-10-01 13:20:06.938,2024-12-27 02:46:58.949,Galaxy Watch6,SM-R930,,,DA11Kl5+/r,com.sec.android.app.shealth,,,a834230c-9e46-42eb-8f7e-e33e0e493954,
+Samsung Electronics,,,,,,,,360003,2025-10-16 21:19:39.837,2025-10-16 21:19:39.837,Strava,www.strava.com,,,vCZkJVUE9H,com.sec.android.app.shealth,,moto g stylus 5G - 2024,74ece041-e085-743f-abd0-fdfc27a234bd,

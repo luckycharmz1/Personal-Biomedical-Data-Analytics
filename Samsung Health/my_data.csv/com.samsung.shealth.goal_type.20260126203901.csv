@@ -1,0 +1,4 @@
+﻿com.samsung.shealth.goal_type,6307003,1
+movement_type,energy_type,update_time,create_time,duration_type,time_offset,deviceuuid,pkg_name,set_time,datauuid
+0,1,2024-08-04 01:21:14.265,2024-08-04 01:21:14.265,0,UTC-0700,3sHRV5oxWU,com.sec.android.app.shealth,1722734474263,41d65cf1-ed0d-4440-8408-63793762f973,
+0,0,2024-08-04 01:21:17.555,2024-08-04 01:21:17.555,0,UTC-0700,3sHRV5oxWU,com.sec.android.app.shealth,1722734477554,af434732-4bc7-47a6-97e7-c37410f55d08,

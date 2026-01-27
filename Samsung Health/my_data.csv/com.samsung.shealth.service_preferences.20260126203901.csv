@@ -1,0 +1,7 @@
+﻿com.samsung.shealth.service_preferences,6307003,1
+text_value,service_id,float_value,update_time,create_time,long_value,key,tag,blob_value,int_value,deviceuuid,pkg_name,double_value,datauuid
+,,,2026-01-05 05:44:04.331,2026-01-05 05:44:04.331,,oobe.completed,,,1,+NZu810/s3,com.sec.android.app.shealth,,43d0bd9d-f0bf-461b-be62-cecac9bdd232,
+,tracker.cycle,,2026-01-06 17:37:11.245,2026-01-05 05:44:05.883,,cycle.shd_consent_status,,,1,+NZu810/s3,com.sec.android.app.shealth,,cycle.shd_consent_status,
+,tracker.medication,,2026-01-05 05:44:05.941,2026-01-05 05:44:05.941,,medication.shd_consent_status,,,0,+NZu810/s3,com.sec.android.app.shealth,,medication.shd_consent_status,
+,,,2026-01-05 16:32:43.492,2026-01-05 16:32:43.492,,oobe.shd_on_to_off,,,1,+NZu810/s3,com.sec.android.app.shealth,,94dc5d29-c2a5-4e5b-901a-d1e2f29c4fad,
+,program.sleep_coaching,,2026-01-08 16:31:49.907,2026-01-08 16:31:49.907,,before_sleep_coaching_condition,,1116e1cc-b05b-4f3e-863f-35d99a5dc72f.blob_value.json,,+NZu810/s3,com.sec.android.app.shealth,,1116e1cc-b05b-4f3e-863f-35d99a5dc72f,

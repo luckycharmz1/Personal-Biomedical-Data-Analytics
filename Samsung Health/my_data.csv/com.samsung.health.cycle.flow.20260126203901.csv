@@ -1,0 +1,7 @@
+﻿com.samsung.health.cycle.flow,6307003,2
+spotting,start_time,amount,custom,update_time,create_time,time_offset,deviceuuid,pkg_name,datauuid
+0,2026-01-05 08:00:00.000,1,,2026-01-06 17:37:21.993,2026-01-06 17:37:21.993,UTC-0800,+NZu810/s3,com.sec.android.app.shealth,2e192505-a305-4296-978f-5ff3501b9053,
+0,2026-01-06 08:00:00.000,1,,2026-01-06 17:37:21.993,2026-01-06 17:37:21.993,UTC-0800,+NZu810/s3,com.sec.android.app.shealth,50dd2ab4-3297-426f-bc3d-7a92b07181a6,
+0,2026-01-07 08:00:00.000,1,,2026-01-06 17:37:21.993,2026-01-06 17:37:21.993,UTC-0800,+NZu810/s3,com.sec.android.app.shealth,8d5064f6-53d4-4c1c-b9c0-6340617b1ab0,
+0,2026-01-08 08:00:00.000,1,,2026-01-06 17:37:21.994,2026-01-06 17:37:21.994,UTC-0800,+NZu810/s3,com.sec.android.app.shealth,10381de3-ba58-444c-938f-6cb8e02a0de6,
+0,2026-01-09 08:00:00.000,1,,2026-01-06 17:37:21.994,2026-01-06 17:37:21.994,UTC-0800,+NZu810/s3,com.sec.android.app.shealth,566d8ace-4c14-49c4-b2ac-1a7f26b6e35d,

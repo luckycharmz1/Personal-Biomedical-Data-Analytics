@@ -1,0 +1,9 @@
+﻿com.samsung.shealth.exercise.max_heart_rate,6307003,2
+at_heart_rate,start_time,max_heart_rate,update_time,create_time,time_offset,deviceuuid,ant_heart_rate,pkg_name,datauuid
+0,2024-05-10 19:27:42.264,190,2024-05-10 19:46:58.841,2024-05-10 19:46:58.841,UTC-0700,b4nSrpWupN,0,com.sec.android.app.shealth,6feb79e2-4eb4-472e-9823-2b5c0eabb902,
+0,2024-05-16 03:12:07.487,190,2024-05-16 04:13:38.003,2024-05-16 04:13:38.003,UTC-0700,b4nSrpWupN,0,com.sec.android.app.shealth,677ec3b1-4a4c-4f22-a261-f5ca8ce2bfe1,
+0,2024-07-18 03:14:57.071,190,2024-07-18 03:30:39.228,2024-07-18 03:30:39.228,UTC-0700,b4nSrpWupN,0,com.sec.android.app.shealth,c17bfbbd-f35c-48cb-9f28-585428b3dbf4,
+0,2024-07-19 03:10:31.295,190,2024-07-19 03:19:57.965,2024-07-19 03:19:57.965,UTC-0700,b4nSrpWupN,0,com.sec.android.app.shealth,b289674f-2106-44b3-9ed8-aa99bb814168,
+0,2024-07-19 17:04:52.223,190,2024-07-19 17:30:42.028,2024-07-19 17:30:42.028,UTC-0700,b4nSrpWupN,0,com.sec.android.app.shealth,e4411657-bf36-43f0-bf67-4f8c4ee55d48,
+0,2024-07-20 02:02:45.757,190,2024-07-20 02:19:22.144,2024-07-20 02:19:22.144,UTC-0700,b4nSrpWupN,0,com.sec.android.app.shealth,994abb06-2996-4bfd-ae94-a00052ffe076,
+129,2024-09-28 17:06:52.909,187,2024-09-28 18:33:14.307,2024-09-28 18:33:14.307,UTC-0700,b4nSrpWupN,170,com.sec.android.app.shealth,595589e3-90b7-4570-beaf-007c20e490b1,
