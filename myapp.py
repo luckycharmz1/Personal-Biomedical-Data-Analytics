@@ -38,39 +38,42 @@ else:
         # Try to read the selected file
         # -------------------------
         try:
-            # Use python engine and skip bad lines for messy CSVs
+            # Read CSV safely, skipping bad lines
             df = pd.read_csv(selected_file, engine='python', on_bad_lines='skip')
-            st.success(f"Loaded {selected_file.name} successfully!")
 
             # -------------------------
-            # Display first few rows
+            # Clean the data: remove quotes and extra spaces
             # -------------------------
-            st.subheader("Data Preview")
-            st.dataframe(df.head())
+            df_clean = df.applymap(lambda x: str(x).replace('"','').strip() if isinstance(x, str) else x)
 
             # -------------------------
-            # Convert potential numeric columns
+            # Convert numeric-like columns
             # -------------------------
-            df_numeric = df.apply(pd.to_numeric, errors='coerce')
-            numeric_cols = df_numeric.columns[df_numeric.notna().any()]
+            df_numeric = df_clean.apply(pd.to_numeric, errors='coerce')
+            numeric_cols = [c for c in df_numeric.columns if df_numeric[c].count() > 0]
 
             # -------------------------
             # Detect time columns
             # -------------------------
-            time_cols = [c for c in df.columns if "time" in c.lower() or "date" in c.lower()]
+            time_cols = [c for c in df_clean.columns if "time" in c.lower() or "date" in c.lower()]
             for c in time_cols:
-                df[c] = pd.to_datetime(df[c], errors='coerce')
+                df_clean[c] = pd.to_datetime(df_clean[c], errors='coerce')
+
+            # -------------------------
+            # Display Data Table
+            # -------------------------
+            st.subheader("Data Preview")
+            st.dataframe(df_clean.head())
 
             # -------------------------
             # Plotting
             # -------------------------
-            if len(numeric_cols) > 0:
-                st.subheader("Numeric Data Plot")
+            if numeric_cols:
+                st.subheader("Line Chart of Numeric Data")
                 if time_cols:
-                    # If time column exists, plot numeric columns against the first time column
-                    x_col = time_cols[0]
+                    x_col = time_cols[0]  # Use first time column as x-axis
                     for col in numeric_cols:
-                        st.line_chart(data=df, x=x_col, y=col)
+                        st.line_chart(data=df_clean, x=x_col, y=col)
                 else:
                     # No time column, just plot numeric columns
                     st.line_chart(df_numeric[numeric_cols])
