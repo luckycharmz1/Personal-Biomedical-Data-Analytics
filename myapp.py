@@ -125,3 +125,8 @@ elif selected == "Graphs":
 elif selected == "Contact":
     st.header("Contact")
     st.write("You can reach out for questions or support.")
+    
+    # Add Linktree
+    st.markdown(
+        "🌐 Check out my links here: [Charmainee's Linktree](https://linktr.ee/the.real.charmainee)"
+    )
