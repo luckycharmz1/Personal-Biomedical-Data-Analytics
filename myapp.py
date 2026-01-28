@@ -1,11 +1,19 @@
 from pathlib import Path
 import pandas as pd
 import streamlit as st
+from streamlit_option_menu import option_menu
 
 # -------------------------
-# Streamlit App Title
+# Sidebar Menu
 # -------------------------
-st.title("Charmaine's Biomedical Data Dashboard")
+with st.sidebar:
+    selected = option_menu(
+        menu_title="Main Menu",
+        options=["Home", "Data Viewer", "Graphs", "Contact"],
+        icons=["house", "file-earmark-text", "bar-chart", "envelope"],
+        menu_icon="cast",
+        default_index=0
+    )
 
 # -------------------------
 # Path to your Samsung Health folder
@@ -13,73 +21,93 @@ st.title("Charmaine's Biomedical Data Dashboard")
 data_folder = Path("Samsung Health") / "my_data.csv"
 
 # -------------------------
-# Check folder exists
+# Home Page
 # -------------------------
-if not data_folder.exists() or not data_folder.is_dir():
-    st.error(f"Folder {data_folder} does not exist or is not a folder.")
-else:
-    # -------------------------
-    # List all files in the folder
-    # -------------------------
-    all_files = list(data_folder.iterdir())
-    if not all_files:
-        st.error("No files found in the folder.")
+if selected == "Home":
+    st.header("Charmaine's Biomedical Dashboard")
+    st.write("Welcome! Use the sidebar to navigate through your datasets and graphs.")
+
+# -------------------------
+# Data Viewer Page
+# -------------------------
+elif selected == "Data Viewer":
+    st.header("View Samsung Health Data")
+
+    if not data_folder.exists() or not data_folder.is_dir():
+        st.error(f"Folder {data_folder} does not exist or is not a folder.")
     else:
-        # -------------------------
-        # Let user select a file
-        # -------------------------
-        selected_file = st.selectbox(
-            "Select dataset to view",
-            all_files,
-            format_func=lambda x: x.name
-        )
+        all_files = list(data_folder.iterdir())
+        if not all_files:
+            st.warning("No files found in the folder.")
+        else:
+            selected_file = st.selectbox(
+                "Select dataset to view",
+                all_files,
+                format_func=lambda x: x.name
+            )
 
-        # -------------------------
-        # Try to read the selected file
-        # -------------------------
-        try:
-            # Read CSV safely, skipping bad lines
-            df = pd.read_csv(selected_file, engine='python', on_bad_lines='skip')
+            try:
+                # Read CSV safely, skipping bad lines
+                df = pd.read_csv(selected_file, engine='python', on_bad_lines='skip')
 
-            # -------------------------
-            # Clean the data: remove quotes and extra spaces
-            # -------------------------
-            df_clean = df.applymap(lambda x: str(x).replace('"','').strip() if isinstance(x, str) else x)
+                # Clean the data: remove quotes and extra spaces
+                df_clean = df.applymap(lambda x: str(x).replace('"','').strip() if isinstance(x, str) else x)
 
-            # -------------------------
-            # Convert numeric-like columns
-            # -------------------------
-            df_numeric = df_clean.apply(pd.to_numeric, errors='coerce')
-            numeric_cols = [c for c in df_numeric.columns if df_numeric[c].count() > 0]
+                st.subheader("Data Preview")
+                st.dataframe(df_clean.head())
 
-            # -------------------------
-            # Detect time columns
-            # -------------------------
-            time_cols = [c for c in df_clean.columns if "time" in c.lower() or "date" in c.lower()]
-            for c in time_cols:
-                df_clean[c] = pd.to_datetime(df_clean[c], errors='coerce')
+            except Exception as e:
+                st.error(f"Could not read {selected_file.name}. Error: {e}")
 
-            # -------------------------
-            # Display Data Table
-            # -------------------------
-            st.subheader("Data Preview")
-            st.dataframe(df_clean.head())
+# -------------------------
+# Graphs Page
+# -------------------------
+elif selected == "Graphs":
+    st.header("Graphs of Numeric Data")
 
-            # -------------------------
-            # Plotting
-            # -------------------------
-            if numeric_cols:
-                st.subheader("Line Chart of Numeric Data")
-                if time_cols:
-                    x_col = time_cols[0]  # Use first time column as x-axis
-                    for col in numeric_cols:
-                        st.line_chart(data=df_clean, x=x_col, y=col)
+    if not data_folder.exists() or not data_folder.is_dir():
+        st.error(f"Folder {data_folder} does not exist or is not a folder.")
+    else:
+        all_files = list(data_folder.iterdir())
+        if not all_files:
+            st.warning("No files found in the folder.")
+        else:
+            selected_file = st.selectbox(
+                "Select dataset to plot",
+                all_files,
+                format_func=lambda x: x.name
+            )
+
+            try:
+                df = pd.read_csv(selected_file, engine='python', on_bad_lines='skip')
+                df_clean = df.applymap(lambda x: str(x).replace('"','').strip() if isinstance(x, str) else x)
+
+                # Convert numeric-like columns
+                df_numeric = df_clean.apply(pd.to_numeric, errors='coerce')
+                numeric_cols = [c for c in df_numeric.columns if df_numeric[c].count() > 0]
+
+                # Detect time columns
+                time_cols = [c for c in df_clean.columns if "time" in c.lower() or "date" in c.lower()]
+                for c in time_cols:
+                    df_clean[c] = pd.to_datetime(df_clean[c], errors='coerce')
+
+                if numeric_cols:
+                    st.subheader("Line Chart of Numeric Data")
+                    if time_cols:
+                        x_col = time_cols[0]  # Use first time column as x-axis
+                        for col in numeric_cols:
+                            st.line_chart(data=df_clean, x=x_col, y=col)
+                    else:
+                        st.line_chart(df_numeric[numeric_cols])
                 else:
-                    # No time column, just plot numeric columns
-                    st.line_chart(df_numeric[numeric_cols])
-            else:
-                st.warning("No numeric columns found to plot.")
+                    st.warning("No numeric columns found to plot.")
 
-        except Exception as e:
-            st.error(f"Could not read {selected_file.name}. Error: {e}")
-            st.info("Some Samsung Health files may not be CSV-compatible. Try another file.")
+            except Exception as e:
+                st.error(f"Could not read {selected_file.name}. Error: {e}")
+
+# -------------------------
+# Contact Page
+# -------------------------
+elif selected == "Contact":
+    st.header("Contact")
+    st.write("You can reach out for questions or support.")
