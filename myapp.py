@@ -25,7 +25,21 @@ data_folder = Path("Samsung Health") / "my_data.csv"
 # -------------------------
 if selected == "Home":
     st.header("Charmaine's Biomedical Dashboard")
-    st.write("Welcome! Use the sidebar to navigate through your datasets and graphs.")
+    
+    # Personal introduction paragraph
+    st.markdown(
+        """
+        Welcome to my first biomedical data dashboard!  
+
+        I'm still actively working on improving this app, so please be patient with me.  
+        My goal is to **bridge science and technology**—combining my love for technology with my experience living with **sickle cell anemia**.  
+
+        Through data science, I hope to **save lives** and make healthcare insights more accessible.  
+        Thank you for visiting, and I hope you find the data here interesting!
+        """
+    )
+    st.markdown("💡 This is a work in progress. Thank you for your patience!")
+    st.markdown("---")  # horizontal line
 
 # -------------------------
 # Data Viewer Page
