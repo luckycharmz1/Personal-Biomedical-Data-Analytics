@@ -34,7 +34,7 @@ if selected == "Home":
         I'm still actively working on improving this app, so please be patient with me.  
         My goal is to **bridge science and technology**—combining my love for technology with my experience living with **sickle cell anemia**.  
 
-        My love for science grew even deeper from **September 2025 to December 2025**, when my mentor helped me form hypotheses to explore my curiosity about sickle cell anemia.  
+        My love for science grew even deeper from **September 2025 to December 2025**, when my Stanford University mentor helped me form hypotheses to explore my curiosity about sickle cell anemia.  
         What started as a single question is now **becoming an app**.  
 
         Through this dashboard, I hope to create something **useful for sickle cell patients**—helping predict oncoming crises and potentially preventing them.  
