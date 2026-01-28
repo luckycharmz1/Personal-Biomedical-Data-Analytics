@@ -1,11 +1,21 @@
 {
   "name": "personal-biomedical-data-analytics",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "node index.js"
   },
-  "author": "",
-  "license": ""
+  "dependencies": {
+    "react": "^17.0.2",
+    "streamlit-component-lib": "^1.0.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.28.6",
+    "@babel/preset-env": "^7.28.6",
+    "@babel/preset-react": "^7.28.5",
+    "babel-loader": "^10.0.0",
+    "webpack": "^5.104.1",
+    "webpack-cli": "^6.0.1",
+    "webpack-dev-server": "^5.2.3"
+  }
 }
