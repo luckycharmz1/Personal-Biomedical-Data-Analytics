@@ -27,10 +27,9 @@ with st.sidebar:
     )
 
 # =========================
-# Data Folder (FIXED)
+# Data Folder
 # =========================
 data_folder = Path("Samsung Health") / "my_data.csv"
-
 
 # =========================
 # HOME PAGE
@@ -59,7 +58,6 @@ if selected == "Home":
     st.markdown("---")
     st.info("This is an evolving research and portfolio project.")
 
-
 # =========================
 # DATA VIEWER PAGE
 # =========================
@@ -69,10 +67,11 @@ elif selected == "Data Viewer":
     if not data_folder.exists() or not data_folder.is_dir():
         st.error(f"Folder '{data_folder}' does not exist.")
     else:
+        # Only list CSV files inside the folder
         all_files = [
-    f for f in data_folder.iterdir()
-    if f.is_file() and f.suffix.lower() == ".csv"
-]
+            f for f in data_folder.iterdir()
+            if f.is_file() and f.suffix.lower() == ".csv"
+        ]
 
         if not all_files:
             st.warning("No CSV files found in the folder.")
@@ -102,7 +101,6 @@ elif selected == "Data Viewer":
             except Exception as e:
                 st.error(f"Error reading file: {e}")
 
-
 # =========================
 # GRAPHS PAGE
 # =========================
@@ -113,9 +111,9 @@ elif selected == "Graphs":
         st.error(f"Folder '{data_folder}' does not exist.")
     else:
         all_files = [
-    f for f in data_folder.iterdir()
-    if f.is_file() and f.suffix.lower() == ".csv"
-]
+            f for f in data_folder.iterdir()
+            if f.is_file() and f.suffix.lower() == ".csv"
+        ]
 
         if not all_files:
             st.warning("No CSV files found in the folder.")
@@ -135,21 +133,24 @@ elif selected == "Graphs":
                     if isinstance(x, str) else x
                 )
 
-                # Detect time columns
+                # Detect and parse time/date columns
                 time_cols = [
                     c for c in df.columns
                     if "time" in c.lower() or "date" in c.lower()
                 ]
-
                 for col in time_cols:
                     df[col] = pd.to_datetime(df[col], errors="coerce")
 
-                # Detect numeric columns
-                df_numeric = df.apply(pd.to_numeric, errors="coerce")
-                numeric_cols = [
-                    c for c in df_numeric.columns
-                    if df_numeric[c].count() > 0
-                ]
+                # Clean numeric columns
+                df_numeric = pd.DataFrame()
+                for col in df.columns:
+                    if df[col].dtype == object:
+                        # Remove all non-numeric except dot (decimal)
+                        df[col] = df[col].str.replace(r"[^0-9.]", "", regex=True)
+                    df_numeric[col] = pd.to_numeric(df[col], errors="coerce")
+
+                # Only keep columns that actually have numeric data
+                numeric_cols = [c for c in df_numeric.columns if df_numeric[c].count() > 0]
 
                 if not numeric_cols:
                     st.warning("No numeric columns found.")
@@ -159,10 +160,10 @@ elif selected == "Graphs":
                         numeric_cols
                     )
 
-                    # If time column exists → time-series analysis
                     if time_cols:
                         x_col = time_cols[0]
 
+                        # Date filter
                         min_date = df[x_col].min()
                         max_date = df[x_col].max()
 
@@ -195,15 +196,13 @@ elif selected == "Graphs":
                             y=[metric, "Rolling Avg"]
                         )
 
-                        # Correlation Explorer
+                        # Correlation scatter plot
                         st.subheader("Correlation Explorer")
-
                         x_axis = st.selectbox(
                             "X-axis",
                             numeric_cols,
                             key="x_axis"
                         )
-
                         y_axis = st.selectbox(
                             "Y-axis",
                             numeric_cols,
@@ -218,11 +217,11 @@ elif selected == "Graphs":
                         )
 
                     else:
+                        # No time column → just plot numeric
                         st.line_chart(df_numeric[metric])
 
             except Exception as e:
                 st.error(f"Error processing file: {e}")
-
 
 # =========================
 # CONTACT PAGE
