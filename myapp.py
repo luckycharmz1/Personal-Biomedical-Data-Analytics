@@ -3,6 +3,7 @@ import pandas as pd
 import streamlit as st
 from streamlit_option_menu import option_menu
 
+
 # -------------------------
 # Sidebar Menu
 # -------------------------
@@ -81,14 +82,15 @@ elif selected == "Data Viewer":
 # Graphs Page
 # -------------------------
 elif selected == "Graphs":
-    st.header("Graphs of Numeric Data")
+    st.header("Interactive Biomedical Graphs")
 
     if not data_folder.exists() or not data_folder.is_dir():
         st.error(f"Folder {data_folder} does not exist or is not a folder.")
     else:
-        all_files = list(data_folder.iterdir())
+        all_files = list(data_folder.glob("*.csv"))
+
         if not all_files:
-            st.warning("No files found in the folder.")
+            st.warning("No CSV files found in the folder.")
         else:
             selected_file = st.selectbox(
                 "Select dataset to plot",
@@ -98,31 +100,61 @@ elif selected == "Graphs":
 
             try:
                 df = pd.read_csv(selected_file, engine='python', on_bad_lines='skip')
-                df_clean = df.applymap(lambda x: str(x).replace('"','').strip() if isinstance(x, str) else x)
+                df = df.applymap(lambda x: str(x).replace('"','').strip() if isinstance(x, str) else x)
 
-                # Convert numeric-like columns
-                df_numeric = df_clean.apply(pd.to_numeric, errors='coerce')
+                # Convert date/time columns
+                time_cols = [c for c in df.columns if "time" in c.lower() or "date" in c.lower()]
+                for c in time_cols:
+                    df[c] = pd.to_datetime(df[c], errors='coerce')
+
+                # Convert numeric columns
+                df_numeric = df.apply(pd.to_numeric, errors='coerce')
                 numeric_cols = [c for c in df_numeric.columns if df_numeric[c].count() > 0]
 
-                # Detect time columns
-                time_cols = [c for c in df_clean.columns if "time" in c.lower() or "date" in c.lower()]
-                for c in time_cols:
-                    df_clean[c] = pd.to_datetime(df_clean[c], errors='coerce')
-
-                if numeric_cols:
-                    st.subheader("Line Chart of Numeric Data")
-                    if time_cols:
-                        x_col = time_cols[0]  # Use first time column as x-axis
-                        for col in numeric_cols:
-                            st.line_chart(data=df_clean, x=x_col, y=col)
-                    else:
-                        st.line_chart(df_numeric[numeric_cols])
-                else:
+                if not numeric_cols:
                     st.warning("No numeric columns found to plot.")
+                else:
+                    metric = st.selectbox("Select metric to analyze", numeric_cols)
+
+                    if time_cols:
+                        x_col = time_cols[0]
+
+                        # Date filter
+                        min_date = df[x_col].min()
+                        max_date = df[x_col].max()
+
+                        start_date, end_date = st.date_input(
+                            "Select date range",
+                            [min_date, max_date]
+                        )
+
+                        filtered_df = df[
+                            (df[x_col] >= pd.to_datetime(start_date)) &
+                            (df[x_col] <= pd.to_datetime(end_date))
+                        ]
+
+                        # Rolling average slider
+                        window = st.slider("Rolling average window (days)", 1, 30, 7)
+
+                        filtered_df["Rolling Avg"] = (
+                            pd.to_numeric(filtered_df[metric], errors="coerce")
+                            .rolling(window)
+                            .mean()
+                        )
+
+                        st.subheader(f"{metric} Over Time")
+
+                        st.line_chart(
+                            filtered_df,
+                            x=x_col,
+                            y=[metric, "Rolling Avg"]
+                        )
+
+                    else:
+                        st.line_chart(df_numeric[metric])
 
             except Exception as e:
                 st.error(f"Could not read {selected_file.name}. Error: {e}")
-
 # -------------------------
 # Contact Page
 # -------------------------
