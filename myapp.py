@@ -1,12 +1,22 @@
+# =========================
+# Imports
+# =========================
 from pathlib import Path
 import pandas as pd
 import streamlit as st
 from streamlit_option_menu import option_menu
 
+# =========================
+# Page Config
+# =========================
+st.set_page_config(
+    page_title="Biomedical Dashboard",
+    layout="wide"
+)
 
-# -------------------------
-# Sidebar Menu
-# -------------------------
+# =========================
+# Sidebar Navigation
+# =========================
 with st.sidebar:
     selected = option_menu(
         menu_title="Main Menu",
@@ -16,48 +26,53 @@ with st.sidebar:
         default_index=0
     )
 
-# -------------------------
-# Path to your Samsung Health folder
-# -------------------------
-data_folder = Path("Samsung Health") / "my_data.csv"
+# =========================
+# Data Folder (FIXED)
+# =========================
+data_folder = Path("Samsung Health")
 
-# -------------------------
-# Home Page
-# -------------------------
+
+# =========================
+# HOME PAGE
+# =========================
 if selected == "Home":
-    st.header("Charmaine's Biomedical Dashboard")
-    
-    # Personal introduction paragraph
+    st.title("Charmaine's Biomedical Data Dashboard")
+
     st.markdown(
         """
-        Welcome to my first biomedical data dashboard!  
+        Welcome to my biomedical data exploration dashboard.
 
-        I'm still actively working on improving this app, so please be patient with me.  
-        My goal is to **bridge science and technology**—combining my love for technology with my experience living with **sickle cell anemia**.  
+        This project bridges *science and technology*, combining my love
+        for data with my lived experience with *sickle cell anemia*.
 
-        My love for science grew even deeper from **September 2025 to December 2025**, when my Stanford University mentor helped me form hypotheses to explore my curiosity about sickle cell anemia.  
-        What started as a single question is now **becoming an app**.  
+        From September 2025 to December 2025, I worked with a Stanford
+        mentor to develop hypotheses about physiological patterns that may
+        precede sickle cell crises.
 
-        Through this dashboard, I hope to create something **useful for sickle cell patients**—helping predict oncoming crises and potentially preventing them.  
+        This dashboard explores trends in wearable data to identify
+        meaningful patterns over time.
 
-        Thank you for visiting, and I hope you find the data here interesting!
+        ⚠️ This tool is exploratory and not intended for medical diagnosis.
         """
     )
-    st.markdown("💡 This is a work in progress. Thank you for your patience!")
-    st.markdown("---")  # horizontal line
 
-# -------------------------
-# Data Viewer Page
-# -------------------------
+    st.markdown("---")
+    st.info("This is an evolving research and portfolio project.")
+
+
+# =========================
+# DATA VIEWER PAGE
+# =========================
 elif selected == "Data Viewer":
-    st.header("View Samsung Health Data")
+    st.header("Samsung Health Data Viewer")
 
     if not data_folder.exists() or not data_folder.is_dir():
-        st.error(f"Folder {data_folder} does not exist or is not a folder.")
+        st.error(f"Folder '{data_folder}' does not exist.")
     else:
-        all_files = list(data_folder.iterdir())
+        all_files = list(data_folder.glob("*.csv"))
+
         if not all_files:
-            st.warning("No files found in the folder.")
+            st.warning("No CSV files found in the folder.")
         else:
             selected_file = st.selectbox(
                 "Select dataset to view",
@@ -66,26 +81,33 @@ elif selected == "Data Viewer":
             )
 
             try:
-                # Read CSV safely, skipping bad lines
-                df = pd.read_csv(selected_file, engine='python', on_bad_lines='skip')
+                df = pd.read_csv(selected_file, engine="python", on_bad_lines="skip")
 
-                # Clean the data: remove quotes and extra spaces
-                df_clean = df.applymap(lambda x: str(x).replace('"','').strip() if isinstance(x, str) else x)
+                # Clean strings
+                df = df.applymap(
+                    lambda x: str(x).replace('"', '').strip()
+                    if isinstance(x, str) else x
+                )
 
-                st.subheader("Data Preview")
-                st.dataframe(df_clean.head())
+                st.subheader("Preview")
+                st.dataframe(df.head(), use_container_width=True)
+
+                st.subheader("Basic Info")
+                st.write(f"Rows: {df.shape[0]}")
+                st.write(f"Columns: {df.shape[1]}")
 
             except Exception as e:
-                st.error(f"Could not read {selected_file.name}. Error: {e}")
+                st.error(f"Error reading file: {e}")
 
-# -------------------------
-# Graphs Page
-# -------------------------
+
+# =========================
+# GRAPHS PAGE
+# =========================
 elif selected == "Graphs":
     st.header("Interactive Biomedical Graphs")
 
     if not data_folder.exists() or not data_folder.is_dir():
-        st.error(f"Folder {data_folder} does not exist or is not a folder.")
+        st.error(f"Folder '{data_folder}' does not exist.")
     else:
         all_files = list(data_folder.glob("*.csv"))
 
@@ -93,33 +115,48 @@ elif selected == "Graphs":
             st.warning("No CSV files found in the folder.")
         else:
             selected_file = st.selectbox(
-                "Select dataset to plot",
+                "Select dataset",
                 all_files,
                 format_func=lambda x: x.name
             )
 
             try:
-                df = pd.read_csv(selected_file, engine='python', on_bad_lines='skip')
-                df = df.applymap(lambda x: str(x).replace('"','').strip() if isinstance(x, str) else x)
+                df = pd.read_csv(selected_file, engine="python", on_bad_lines="skip")
 
-                # Convert date/time columns
-                time_cols = [c for c in df.columns if "time" in c.lower() or "date" in c.lower()]
-                for c in time_cols:
-                    df[c] = pd.to_datetime(df[c], errors='coerce')
+                # Clean strings
+                df = df.applymap(
+                    lambda x: str(x).replace('"', '').strip()
+                    if isinstance(x, str) else x
+                )
 
-                # Convert numeric columns
-                df_numeric = df.apply(pd.to_numeric, errors='coerce')
-                numeric_cols = [c for c in df_numeric.columns if df_numeric[c].count() > 0]
+                # Detect time columns
+                time_cols = [
+                    c for c in df.columns
+                    if "time" in c.lower() or "date" in c.lower()
+                ]
+
+                for col in time_cols:
+                    df[col] = pd.to_datetime(df[col], errors="coerce")
+
+                # Detect numeric columns
+                df_numeric = df.apply(pd.to_numeric, errors="coerce")
+                numeric_cols = [
+                    c for c in df_numeric.columns
+                    if df_numeric[c].count() > 0
+                ]
 
                 if not numeric_cols:
-                    st.warning("No numeric columns found to plot.")
+                    st.warning("No numeric columns found.")
                 else:
-                    metric = st.selectbox("Select metric to analyze", numeric_cols)
+                    metric = st.selectbox(
+                        "Select metric to analyze",
+                        numeric_cols
+                    )
 
+                    # If time column exists → time-series analysis
                     if time_cols:
                         x_col = time_cols[0]
 
-                        # Date filter
                         min_date = df[x_col].min()
                         max_date = df[x_col].max()
 
@@ -131,10 +168,13 @@ elif selected == "Graphs":
                         filtered_df = df[
                             (df[x_col] >= pd.to_datetime(start_date)) &
                             (df[x_col] <= pd.to_datetime(end_date))
-                        ]
+                        ].copy()
 
-                        # Rolling average slider
-                        window = st.slider("Rolling average window (days)", 1, 30, 7)
+                        # Rolling average
+                        window = st.slider(
+                            "Rolling Average Window (days)",
+                            1, 30, 7
+                        )
 
                         filtered_df["Rolling Avg"] = (
                             pd.to_numeric(filtered_df[metric], errors="coerce")
@@ -143,26 +183,50 @@ elif selected == "Graphs":
                         )
 
                         st.subheader(f"{metric} Over Time")
-
                         st.line_chart(
                             filtered_df,
                             x=x_col,
                             y=[metric, "Rolling Avg"]
                         )
 
+                        # Correlation Explorer
+                        st.subheader("Correlation Explorer")
+
+                        x_axis = st.selectbox(
+                            "X-axis",
+                            numeric_cols,
+                            key="x_axis"
+                        )
+
+                        y_axis = st.selectbox(
+                            "Y-axis",
+                            numeric_cols,
+                            index=1 if len(numeric_cols) > 1 else 0,
+                            key="y_axis"
+                        )
+
+                        st.scatter_chart(
+                            df_numeric,
+                            x=x_axis,
+                            y=y_axis
+                        )
+
                     else:
                         st.line_chart(df_numeric[metric])
 
             except Exception as e:
-                st.error(f"Could not read {selected_file.name}. Error: {e}")
-# -------------------------
-# Contact Page
-# -------------------------
+                st.error(f"Error processing file: {e}")
+
+
+# =========================
+# CONTACT PAGE
+# =========================
 elif selected == "Contact":
     st.header("Contact")
-    st.write("You can reach out for questions or support.")
-    
-    # Add Linktree
+
     st.markdown(
-        "🌐 Check out my links here: [Charmainee's Linktree](https://linktr.ee/the.real.charmainee)"
+        "🌐 Connect with me here: "
+        "[Charmainee's Linktree](https://linktr.ee/the.real.charmainee)"
     )
+
+    st.write("Thank you for supporting biomedical data exploration.")
