@@ -29,7 +29,7 @@ with st.sidebar:
 # =========================
 # Data Folder (FIXED)
 # =========================
-data_folder = Path("Samsung Health")
+data_folder = Path("Samsung Health") / "my_data.csv"
 
 
 # =========================
