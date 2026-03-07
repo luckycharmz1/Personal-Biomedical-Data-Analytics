@@ -60,7 +60,7 @@ if selected == "Home":
     st.markdown(
         """
             Here is the unofficial scientific research paper. 
-            Currently, its only contents are the Obersavation and Hypothesis as it
+            Currently, its only contents consists of the Obersavation and Hypothesis as of now. As it
             is not a completed experiment.
             
             Click here to read: "[Charmaine's Unofficial Scientific Research Paper](https://docs.google.com/document/d/1v469ivc47A7XoQT55V1xtfQh5k40MWHi3-0tb7b99n0/edit?usp=sharing)
