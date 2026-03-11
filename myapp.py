@@ -48,6 +48,10 @@ if selected == "Home":
         mentor to develop hypotheses about physiological patterns that may
         precede sickle cell crises.
 
+        I have then to go on to conduct my own independent research on wearable 
+        technology and sickle cell anemia. I greatly appreciate my mentor Dr. Nowah Afangbedii
+        for giving me the knowleedge to conduct this independent research. 
+
         This dashboard explores trends in wearable data to identify
         meaningful patterns over time.
 
