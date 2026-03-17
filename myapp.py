@@ -127,13 +127,17 @@ elif selected == "Graphs":
             df_list = []
             for f in all_files:
                 try:
-                    # Read CSV as single column (header=None)
-                    temp_df = pd.read_csv(f, header=None, engine="python", on_bad_lines="skip")
+                    # Read CSV normally (detect headers)
+                    temp_df = pd.read_csv(f, engine="python", on_bad_lines="skip")
+
                     if temp_df.empty:
                         continue
-                    # Name the column after the file (without .csv)
-                    temp_df.columns = [f.stem]  # f.stem = filename without extension
+
+                    # Prefix each column with filename (without extension)
+                    temp_df.columns = [f"{f.stem}_{col}" for col in temp_df.columns]
+
                     df_list.append(temp_df)
+
                 except pd.errors.EmptyDataError:
                     continue
                 except Exception as e:
@@ -142,7 +146,7 @@ elif selected == "Graphs":
             if not df_list:
                 st.warning("No valid CSV data found in the folder.")
             else:
-                # Combine all CSVs *side by side* (align by index)
+                # Combine CSVs side by side, align by index
                 df = pd.concat(df_list, axis=1)
 
                 # Clean numeric columns
@@ -151,7 +155,6 @@ elif selected == "Graphs":
                     temp_col = df[col].astype(str).str.replace(r"[^0-9.-]", "", regex=True)
                     df_numeric[col] = pd.to_numeric(temp_col, errors="coerce")
 
-                # Only keep columns with numeric data
                 numeric_cols = [c for c in df_numeric.columns if df_numeric[c].count() > 0]
 
                 if not numeric_cols:
@@ -159,11 +162,9 @@ elif selected == "Graphs":
                 else:
                     metric = st.selectbox("Select metric to analyze", numeric_cols)
 
-                    # Plot numeric values
                     st.subheader(f"{metric} Over Entries")
                     st.line_chart(df_numeric[metric])
 
-                    # Correlation explorer if more than 1 column
                     if len(numeric_cols) > 1:
                         st.subheader("Correlation Explorer")
                         x_axis = st.selectbox("X-axis", numeric_cols, key="x_axis")
