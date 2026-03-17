@@ -124,7 +124,7 @@ elif selected == "Graphs":
         if not all_files:
             st.warning("No CSV files found in the folder.")
         else:
-            # Let the user select which CSV to plot
+            # Dropdown menu for CSV selection
             selected_file = st.selectbox(
                 "Select dataset to visualize",
                 all_files,
@@ -132,29 +132,32 @@ elif selected == "Graphs":
             )
 
             try:
-                # Read CSV with headers if present, else fallback to no headers
-                try:
-                    df = pd.read_csv(selected_file, engine="python", on_bad_lines="skip")
-                except pd.errors.ParserError:
-                    df = pd.read_csv(selected_file, header=None, engine="python", on_bad_lines="skip")
+                # Read CSV without headers (treat all files as single or multi-column numeric data)
+                df = pd.read_csv(selected_file, header=None, engine="python", on_bad_lines="skip")
 
                 if df.empty:
                     st.warning("CSV file is empty.")
                 else:
-                    # Clean numeric columns
-                    df_numeric = pd.DataFrame()
-                    for col in df.columns:
-                        temp_col = df[col].astype(str).str.replace(r"[^0-9.-]", "", regex=True)
-                        df_numeric[col] = pd.to_numeric(temp_col, errors="coerce")
-
-                    numeric_cols = [c for c in df_numeric.columns if df_numeric[c].count() > 0]
-
-                    if not numeric_cols:
-                        st.warning("No numeric columns found to plot.")
+                    # If single-column, just use column 0
+                    if df.shape[1] == 1:
+                        col_name = selected_file.stem  # use filename as label
+                        df_numeric = pd.to_numeric(df[0], errors="coerce")
+                        st.subheader(f"{col_name}")
+                        st.line_chart(df_numeric)
                     else:
-                        metric = st.selectbox("Select metric to analyze", numeric_cols)
+                        # If multi-column, clean numeric values for each column
+                        df_numeric = pd.DataFrame()
+                        for i, col in enumerate(df.columns):
+                            col_name = f"{selected_file.stem}_col{i+1}"  # filename + col index
+                            temp_col = df[col].astype(str).str.replace(r"[^0-9.-]", "", regex=True)
+                            df_numeric[col_name] = pd.to_numeric(temp_col, errors="coerce")
 
-                        st.subheader(f"{metric} from {selected_file.name}")
+                        # Let user pick which column to plot
+                        metric = st.selectbox(
+                            "Select metric to analyze",
+                            df_numeric.columns
+                        )
+                        st.subheader(f"{metric}")
                         st.line_chart(df_numeric[metric])
 
             except Exception as e:
