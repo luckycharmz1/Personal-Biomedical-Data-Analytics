@@ -244,7 +244,7 @@ elif selected == "Contact":
 
     st.markdown(
         "🌐 Connect with me here: "
-        "[Charmainee's Linktree](https://linktr.ee/the.real.charmainee)"
+        "[Charmaine's Linktree](https://linktr.ee/the.real.charmainee)"
     )
 
     st.write("Thank you for supporting biomedical data exploration.")
