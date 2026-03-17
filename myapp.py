@@ -124,13 +124,15 @@ elif selected == "Graphs":
         if not all_files:
             st.warning("No CSV files found in the folder.")
         else:
-            # Combine all CSVs, skip empty ones, no headers
             df_list = []
             for f in all_files:
                 try:
+                    # Read CSV as single column (header=None)
                     temp_df = pd.read_csv(f, header=None, engine="python", on_bad_lines="skip")
                     if temp_df.empty:
                         continue
+                    # Name the column after the file (without .csv)
+                    temp_df.columns = [f.stem]  # f.stem = filename without extension
                     df_list.append(temp_df)
                 except pd.errors.EmptyDataError:
                     continue
@@ -140,10 +142,8 @@ elif selected == "Graphs":
             if not df_list:
                 st.warning("No valid CSV data found in the folder.")
             else:
-                df = pd.concat(df_list, ignore_index=True)
-
-                # Rename columns to generic names
-                df.columns = [f"col{i}" for i in range(df.shape[1])]
+                # Combine all CSVs *side by side* (align by index)
+                df = pd.concat(df_list, axis=1)
 
                 # Clean numeric columns
                 df_numeric = pd.DataFrame()
@@ -159,11 +159,11 @@ elif selected == "Graphs":
                 else:
                     metric = st.selectbox("Select metric to analyze", numeric_cols)
 
-                    # Since no time column exists, just plot numeric values
+                    # Plot numeric values
                     st.subheader(f"{metric} Over Entries")
                     st.line_chart(df_numeric[metric])
 
-                    # Correlation explorer
+                    # Correlation explorer if more than 1 column
                     if len(numeric_cols) > 1:
                         st.subheader("Correlation Explorer")
                         x_axis = st.selectbox("X-axis", numeric_cols, key="x_axis")
