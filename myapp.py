@@ -5,6 +5,7 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 from streamlit_option_menu import option_menu
+import plotly.express as px
 
 # =========================
 # Page Config
@@ -132,33 +133,49 @@ elif selected == "Graphs":
             )
 
             try:
-                # Read CSV without headers (treat all files as single or multi-column numeric data)
+                # Read CSV without headers
                 df = pd.read_csv(selected_file, header=None, engine="python", on_bad_lines="skip")
 
                 if df.empty:
                     st.warning("CSV file is empty.")
                 else:
-                    # If single-column, just use column 0
+                    # Single-column CSV
                     if df.shape[1] == 1:
-                        col_name = selected_file.stem  # use filename as label
+                        col_name = selected_file.stem
                         df_numeric = pd.to_numeric(df[0], errors="coerce")
                         st.subheader(f"{col_name}")
-                        st.line_chart(df_numeric)
+
+                        fig = px.line(
+                            df_numeric,
+                            y=df_numeric,
+                            labels={"y": col_name, "index": "Index"},
+                            title=col_name
+                        )
+                        fig.update_traces(line=dict(color="purple"))
+                        st.plotly_chart(fig, use_container_width=True)
+
+                    # Multi-column CSV
                     else:
-                        # If multi-column, clean numeric values for each column
                         df_numeric = pd.DataFrame()
                         for i, col in enumerate(df.columns):
-                            col_name = f"{selected_file.stem}_col{i+1}"  # filename + col index
+                            col_name = f"{selected_file.stem}_col{i+1}"
                             temp_col = df[col].astype(str).str.replace(r"[^0-9.-]", "", regex=True)
                             df_numeric[col_name] = pd.to_numeric(temp_col, errors="coerce")
 
-                        # Let user pick which column to plot
                         metric = st.selectbox(
                             "Select metric to analyze",
                             df_numeric.columns
                         )
                         st.subheader(f"{metric}")
-                        st.line_chart(df_numeric[metric])
+
+                        fig = px.line(
+                            df_numeric,
+                            y=metric,
+                            labels={"y": metric, "index": "Index"},
+                            title=metric
+                        )
+                        fig.update_traces(line=dict(color="purple"))
+                        st.plotly_chart(fig, use_container_width=True)
 
             except Exception as e:
                 st.error(f"Error processing {selected_file.name}: {e}")
