@@ -124,52 +124,41 @@ elif selected == "Graphs":
         if not all_files:
             st.warning("No CSV files found in the folder.")
         else:
-            df_list = []
-            for f in all_files:
+            # Let the user select which CSV to plot
+            selected_file = st.selectbox(
+                "Select dataset to visualize",
+                all_files,
+                format_func=lambda x: x.name
+            )
+
+            try:
+                # Read CSV with headers if present, else fallback to no headers
                 try:
-                    # Read CSV normally (detect headers)
-                    temp_df = pd.read_csv(f, engine="python", on_bad_lines="skip")
+                    df = pd.read_csv(selected_file, engine="python", on_bad_lines="skip")
+                except pd.errors.ParserError:
+                    df = pd.read_csv(selected_file, header=None, engine="python", on_bad_lines="skip")
 
-                    if temp_df.empty:
-                        continue
-
-                    # Prefix each column with filename (without extension)
-                    temp_df.columns = [f"{f.stem}_{col}" for col in temp_df.columns]
-
-                    df_list.append(temp_df)
-
-                except pd.errors.EmptyDataError:
-                    continue
-                except Exception as e:
-                    st.warning(f"Could not read {f.name}: {e}")
-
-            if not df_list:
-                st.warning("No valid CSV data found in the folder.")
-            else:
-                # Combine CSVs side by side, align by index
-                df = pd.concat(df_list, axis=1)
-
-                # Clean numeric columns
-                df_numeric = pd.DataFrame()
-                for col in df.columns:
-                    temp_col = df[col].astype(str).str.replace(r"[^0-9.-]", "", regex=True)
-                    df_numeric[col] = pd.to_numeric(temp_col, errors="coerce")
-
-                numeric_cols = [c for c in df_numeric.columns if df_numeric[c].count() > 0]
-
-                if not numeric_cols:
-                    st.warning("No numeric columns found to plot.")
+                if df.empty:
+                    st.warning("CSV file is empty.")
                 else:
-                    metric = st.selectbox("Select metric to analyze", numeric_cols)
+                    # Clean numeric columns
+                    df_numeric = pd.DataFrame()
+                    for col in df.columns:
+                        temp_col = df[col].astype(str).str.replace(r"[^0-9.-]", "", regex=True)
+                        df_numeric[col] = pd.to_numeric(temp_col, errors="coerce")
 
-                    st.subheader(f"{metric} Over Entries")
-                    st.line_chart(df_numeric[metric])
+                    numeric_cols = [c for c in df_numeric.columns if df_numeric[c].count() > 0]
 
-                    if len(numeric_cols) > 1:
-                        st.subheader("Correlation Explorer")
-                        x_axis = st.selectbox("X-axis", numeric_cols, key="x_axis")
-                        y_axis = st.selectbox("Y-axis", numeric_cols, index=1 if len(numeric_cols) > 1 else 0, key="y_axis")
-                        st.scatter_chart(df_numeric, x=x_axis, y=y_axis)
+                    if not numeric_cols:
+                        st.warning("No numeric columns found to plot.")
+                    else:
+                        metric = st.selectbox("Select metric to analyze", numeric_cols)
+
+                        st.subheader(f"{metric} from {selected_file.name}")
+                        st.line_chart(df_numeric[metric])
+
+            except Exception as e:
+                st.error(f"Error processing {selected_file.name}: {e}")
 
 # =========================
 # CONTACT PAGE
