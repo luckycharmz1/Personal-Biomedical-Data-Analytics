@@ -80,7 +80,6 @@ elif selected == "Data Viewer":
     if not data_folder.exists() or not data_folder.is_dir():
         st.error(f"Folder '{data_folder}' does not exist.")
     else:
-        # Grab all CSV files in the folder
         all_files = [f for f in data_folder.glob("*.csv") if f.is_file()]
 
         if not all_files:
@@ -93,13 +92,11 @@ elif selected == "Data Viewer":
             )
 
             try:
-                df = pd.read_csv(selected_file, engine="python", on_bad_lines="skip")
+                # Read CSV without headers
+                df = pd.read_csv(selected_file, header=None, engine="python", on_bad_lines="skip")
 
                 # Clean strings
-                df = df.applymap(
-                    lambda x: str(x).replace('"', '').strip()
-                    if isinstance(x, str) else x
-                )
+                df = df.applymap(lambda x: str(x).replace('"', '').strip() if isinstance(x, str) else x)
 
                 st.subheader("Preview")
                 st.dataframe(df.head(), use_container_width=True)
@@ -127,16 +124,16 @@ elif selected == "Graphs":
         if not all_files:
             st.warning("No CSV files found in the folder.")
         else:
-            # Combine all CSVs, skip empty ones
+            # Combine all CSVs, skip empty ones, no headers
             df_list = []
             for f in all_files:
                 try:
-                    temp_df = pd.read_csv(f, engine="python", on_bad_lines="skip")
+                    temp_df = pd.read_csv(f, header=None, engine="python", on_bad_lines="skip")
                     if temp_df.empty:
-                        continue  # skip empty files
+                        continue
                     df_list.append(temp_df)
                 except pd.errors.EmptyDataError:
-                    continue  # skip empty files
+                    continue
                 except Exception as e:
                     st.warning(f"Could not read {f.name}: {e}")
 
@@ -145,20 +142,16 @@ elif selected == "Graphs":
             else:
                 df = pd.concat(df_list, ignore_index=True)
 
-                # Clean strings
-                df = df.applymap(lambda x: str(x).replace('"', '').strip() if isinstance(x, str) else x)
-
-                # Detect time/date columns
-                time_cols = [c for c in df.columns if "time" in c.lower() or "date" in c.lower()]
-                for col in time_cols:
-                    df[col] = pd.to_datetime(df[col], errors="coerce")
+                # Rename columns to generic names
+                df.columns = [f"col{i}" for i in range(df.shape[1])]
 
                 # Clean numeric columns
                 df_numeric = pd.DataFrame()
                 for col in df.columns:
-                    df_numeric[col] = pd.to_numeric(df[col], errors="coerce")
+                    temp_col = df[col].astype(str).str.replace(r"[^0-9.-]", "", regex=True)
+                    df_numeric[col] = pd.to_numeric(temp_col, errors="coerce")
 
-                # Only keep columns with actual numeric data
+                # Only keep columns with numeric data
                 numeric_cols = [c for c in df_numeric.columns if df_numeric[c].count() > 0]
 
                 if not numeric_cols:
@@ -166,29 +159,16 @@ elif selected == "Graphs":
                 else:
                     metric = st.selectbox("Select metric to analyze", numeric_cols)
 
-                    if time_cols:
-                        x_col = time_cols[0]
-                        min_date = df[x_col].min()
-                        max_date = df[x_col].max()
-                        start_date, end_date = st.date_input("Select date range", [min_date, max_date])
+                    # Since no time column exists, just plot numeric values
+                    st.subheader(f"{metric} Over Entries")
+                    st.line_chart(df_numeric[metric])
 
-                        filtered_df = df[
-                            (df[x_col] >= pd.to_datetime(start_date)) &
-                            (df[x_col] <= pd.to_datetime(end_date))
-                        ].copy()
-
-                        window = st.slider("Rolling Average Window (days)", 1, 30, 7)
-                        filtered_df["Rolling Avg"] = pd.to_numeric(filtered_df[metric], errors="coerce").rolling(window).mean()
-
-                        st.subheader(f"{metric} Over Time")
-                        st.line_chart(filtered_df, x=x_col, y=[metric, "Rolling Avg"])
-
+                    # Correlation explorer
+                    if len(numeric_cols) > 1:
                         st.subheader("Correlation Explorer")
                         x_axis = st.selectbox("X-axis", numeric_cols, key="x_axis")
                         y_axis = st.selectbox("Y-axis", numeric_cols, index=1 if len(numeric_cols) > 1 else 0, key="y_axis")
                         st.scatter_chart(df_numeric, x=x_axis, y=y_axis)
-                    else:
-                        st.line_chart(df_numeric[metric])
 
 # =========================
 # CONTACT PAGE
