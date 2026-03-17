@@ -80,11 +80,8 @@ elif selected == "Data Viewer":
     if not data_folder.exists() or not data_folder.is_dir():
         st.error(f"Folder '{data_folder}' does not exist.")
     else:
-        # Only list CSV files inside the folder
-        all_files = [
-            f for f in data_folder.iterdir()
-            if f.is_file() and f.suffix.lower() == ".csv"
-        ]
+        #Grab all CSV files in the folder
+        all_files = [f for f in data_folder.glob("*.csv")if f.is_file()]
 
         if not all_files:
             st.warning("No CSV files found in the folder.")
