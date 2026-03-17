@@ -72,11 +72,6 @@ if selected == "Home":
     
 
 # =========================
-# Data Folder
-# =========================
-data_folder = Path("Samsung Health")  # Folder path only
-
-# =========================
 # DATA VIEWER PAGE
 # =========================
 elif selected == "Data Viewer":
@@ -85,8 +80,11 @@ elif selected == "Data Viewer":
     if not data_folder.exists() or not data_folder.is_dir():
         st.error(f"Folder '{data_folder}' does not exist.")
     else:
-        # List all CSV files inside the folder
-        all_files = [f for f in data_folder.glob("*.csv") if f.is_file()]
+        # Only list CSV files inside the folder
+        all_files = [
+            f for f in data_folder.iterdir()
+            if f.is_file() and f.suffix.lower() == ".csv"
+        ]
 
         if not all_files:
             st.warning("No CSV files found in the folder.")
@@ -125,7 +123,10 @@ elif selected == "Graphs":
     if not data_folder.exists() or not data_folder.is_dir():
         st.error(f"Folder '{data_folder}' does not exist.")
     else:
-        all_files = [f for f in data_folder.glob("*.csv") if f.is_file()]
+        all_files = [
+            f for f in data_folder.iterdir()
+            if f.is_file() and f.suffix.lower() == ".csv"
+        ]
 
         if not all_files:
             st.warning("No CSV files found in the folder.")
@@ -145,12 +146,96 @@ elif selected == "Graphs":
                     if isinstance(x, str) else x
                 )
 
-                # The rest of your existing code for plotting graphs
-                # (time parsing, numeric cleaning, rolling averages, etc.)
+                # Detect and parse time/date columns
+                time_cols = [
+                    c for c in df.columns
+                    if "time" in c.lower() or "date" in c.lower()
+                ]
+                for col in time_cols:
+                    df[col] = pd.to_datetime(df[col], errors="coerce")
+
+                # Clean numeric columns
+                df_numeric = pd.DataFrame()
+                for col in df.columns:
+                    if df[col].dtype == object:
+                        # Remove all non-numeric except dot (decimal)
+                        df[col] = df[col].str.replace(r"[^0-9.]", "", regex=True)
+                    df_numeric[col] = pd.to_numeric(df[col], errors="coerce")
+
+                # Only keep columns that actually have numeric data
+                numeric_cols = [c for c in df_numeric.columns if df_numeric[c].count() > 0]
+
+                if not numeric_cols:
+                    st.warning("No numeric columns found.")
+                else:
+                    metric = st.selectbox(
+                        "Select metric to analyze",
+                        numeric_cols
+                    )
+
+                    if time_cols:
+                        x_col = time_cols[0]
+
+                        # Date filter
+                        min_date = df[x_col].min()
+                        max_date = df[x_col].max()
+
+                        start_date, end_date = st.date_input(
+                            "Select date range",
+                            [min_date, max_date]
+                        )
+
+                        filtered_df = df[
+                            (df[x_col] >= pd.to_datetime(start_date)) &
+                            (df[x_col] <= pd.to_datetime(end_date))
+                        ].copy()
+
+                        # Rolling average
+                        window = st.slider(
+                            "Rolling Average Window (days)",
+                            1, 30, 7
+                        )
+
+                        filtered_df["Rolling Avg"] = (
+                            pd.to_numeric(filtered_df[metric], errors="coerce")
+                            .rolling(window)
+                            .mean()
+                        )
+
+                        st.subheader(f"{metric} Over Time")
+                        st.line_chart(
+                            filtered_df,
+                            x=x_col,
+                            y=[metric, "Rolling Avg"]
+                        )
+
+                        # Correlation scatter plot
+                        st.subheader("Correlation Explorer")
+                        x_axis = st.selectbox(
+                            "X-axis",
+                            numeric_cols,
+                            key="x_axis"
+                        )
+                        y_axis = st.selectbox(
+                            "Y-axis",
+                            numeric_cols,
+                            index=1 if len(numeric_cols) > 1 else 0,
+                            key="y_axis"
+                        )
+
+                        st.scatter_chart(
+                            df_numeric,
+                            x=x_axis,
+                            y=y_axis
+                        )
+
+                    else:
+                        # No time column → just plot numeric
+                        st.line_chart(df_numeric[metric])
 
             except Exception as e:
                 st.error(f"Error processing file: {e}")
-                
+
 # =========================
 # CONTACT PAGE
 # =========================
