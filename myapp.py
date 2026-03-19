@@ -45,7 +45,7 @@ if selected == "Home":
         This project bridges science and technology, combining my love
         for data with my lived experience with sickle cell anemia.
 
-        From September 2025 to December 2025, I worked with a Stanford
+        From September 2025 to December 2025, I worked with a Stanford University
         mentor to develop hypotheses about physiological patterns that may
         precede sickle cell crises.
 
